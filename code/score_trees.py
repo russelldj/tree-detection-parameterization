@@ -120,7 +120,13 @@ def score_one(args):
         print(f"Error scoring {dataset} / {param_combo}: {e}")
         return None
 
-    return {"param_combo": param_combo, "dataset": dataset, **metrics}
+    # Parse parameters from the folder name: sigma_{sigma}__b_{b}_c_{c}
+    parts = param_combo.split("__")
+    sigma = float(parts[0].split("_")[1])
+    b = float(parts[1].split("_b_")[1].split("_c_")[0])
+    c = float(parts[1].split("_c_")[1])
+
+    return {"param_combo": param_combo, "sigma": sigma, "b": b, "c": c, "dataset": dataset, **metrics}
 
 
 if __name__ == "__main__":
