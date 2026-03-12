@@ -2,6 +2,7 @@ import itertools
 from multiprocessing import Pool
 from pathlib import Path
 
+import numpy as np
 import geopandas as gpd
 import pandas as pd
 from tree_detection_framework.entrypoints.detect_geometric_two_stage import (
@@ -22,9 +23,26 @@ RESOLUTION = 0.12
 NUM_WORKERS = 64
 
 # Grid search parameter values
-RASTER_BLUR_SIGMAS = [0.25, 0.5, 1.0, 1.5]
-B_VALUES = [0.01, 0.02, 0.03, 0.04, 0.05]
-C_VALUES = [0, 0.25, 0.5]
+RASTER_BLUR_SIGMAS = np.linspace(0, 1.0, num=7)
+B_VALUES = np.linspace(0, 0.12, num=13)
+C_VALUES = np.linspace(0, 2.0, num=11)
+
+DATASETS_TO_EXCLUDE = set(
+    [
+        "0128_000018_000016",
+        "0137_000208_000210",
+        "0157_000204_000205",
+        "0162_000211_000220",
+        "0163_000211_000220",
+        "0167_000319_000318",
+        "0172_001270_001271",
+        "0174_001270_001271",
+        "0191_001211_001210",
+        "0194_001213_001212",
+        "0208_000112_000310",
+        "0211_000112_000310",
+    ]
+)
 
 
 shift_qualities = pd.read_csv(SHIFT_QUALITIES_FILE)
@@ -40,6 +58,8 @@ plots_with_enough_trees = trees_per_plot[trees_per_plot >= 10].index.tolist()
 high_quality_datasets = [
     d for d in high_quality_datasets if (d[:4] in plots_with_enough_trees)
 ]
+# Remove the datasets which have fewer than 10 live, 10m+ trees in the core area
+high_quality_datasets = list(set(high_quality_datasets) - set(DATASETS_TO_EXCLUDE))
 
 
 def run_detection(args):
