@@ -121,12 +121,19 @@ def score_one(args):
         return None
 
     # Parse parameters from the folder name: sigma_{sigma}__b_{b}_c_{c}
-    parts = param_combo.split("__")
-    sigma = float(parts[0].split("_")[1])
-    b = float(parts[1].split("_b_")[1].split("_c_")[0])
-    c = float(parts[1].split("_c_")[1])
+    parts = param_combo.split("_")
+    sigma = float(parts[1])
+    b = float(parts[4])
+    c = float(parts[6])
 
-    return {"param_combo": param_combo, "sigma": sigma, "b": b, "c": c, "dataset": dataset, **metrics}
+    return {
+        "param_combo": param_combo,
+        "sigma": sigma,
+        "b": b,
+        "c": c,
+        "dataset": dataset,
+        **metrics,
+    }
 
 
 if __name__ == "__main__":
